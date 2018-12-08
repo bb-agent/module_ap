@@ -128,7 +128,7 @@ $service = $_POST["service"];
 // DELETE LOG
 if ($logfile != "" and $action == "delete") {
     $exec = "$bin_rm ".$mod_logs_history.$logfile.".log";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
 }
 
 ?>
@@ -178,10 +178,10 @@ if ($logfile != "" and $action == "delete") {
         $log_ap = "";
     } if ($ap_mode == 3) {
         $mode_name = "Hostapd-Mana";
-        $log_ap = "/usr/share/fruitywifi/logs/mana.log";
+        $log_ap = "/usr/share/blackbulb/logs/mana.log";
         
-        $exec = "sudo /usr/share/fruitywifi/www/modules/mana/includes/hostapd_cli -p /var/run/hostapd karma_get_state | grep 'ENABLE'";
-        $ismoduleup = exec_fruitywifi("$exec");
+        $exec = "sudo /usr/share/blackbulb/www/modules/mana/includes/hostapd_cli -p /var/run/hostapd karma_get_state | grep 'ENABLE'";
+        $ismoduleup = exec_blackbulb("$exec");
         if ($ismoduleup[0] == "KARMA ENABLED") {
             echo "&nbsp;&nbsp;&nbsp; Mana  <font color='lime'><b>enabled</b></font>.&nbsp; | <a href='includes/module_action.php?worker=mana&action=stop&page=module'><b>stop</b></a><br>";
         } else { 
@@ -190,10 +190,10 @@ if ($logfile != "" and $action == "delete") {
         
     } if ($ap_mode == 4) {
         $mode_name = "Hostapd-Karma";
-        $log_ap = "/usr/share/fruitywifi/logs/karma.log";
+        $log_ap = "/usr/share/blackbulb/logs/karma.log";
         
-        $exec = "/usr/share/fruitywifi/www/modules/karma/includes/hostapd_cli -p /var/run/hostapd karma_get_state | grep 'ENABLE'";
-        $ismoduleup = exec_fruitywifi("$exec");
+        $exec = "/usr/share/blackbulb/www/modules/karma/includes/hostapd_cli -p /var/run/hostapd karma_get_state | grep 'ENABLE'";
+        $ismoduleup = exec_blackbulb("$exec");
         if ($ismoduleup[0] == "ENABLED") {
             echo "&nbsp;&nbsp; Karma  <font color='lime'><b>enabled</b></font>.&nbsp; | <a href='includes/module_action.php?worker=karma&action=stop&page=module'><b>stop</b></a><br>";
         } else { 
@@ -701,7 +701,7 @@ Loading, please wait...
             <input class="btn btn-default btn-sm" type="submit" value="Refresh">
             <br><br>
             <?
-                $filename = "/usr/share/fruitywifi/conf/ssid.conf";
+                $filename = "/usr/share/blackbulb/conf/ssid.conf";
             
                 $data = open_file($filename);
                 

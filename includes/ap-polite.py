@@ -89,12 +89,12 @@ FILTER_CLIENT = FILTER_STATION
 FILTER_SSID_LIST = []
 FILTER_CLIENT_LIST = []
 
-TEMP = "/usr/share/fruitywifi/conf/pool-ssid.conf"
+TEMP = "/usr/share/blackbulb/conf/pool-ssid.conf"
 with open(TEMP) as file:
     for line in file:
         FILTER_SSID_LIST.append(line.strip())
         
-TEMP = "/usr/share/fruitywifi/conf/pool-station.conf"
+TEMP = "/usr/share/blackbulb/conf/pool-station.conf"
 with open(TEMP) as file:
     for line in file:
         FILTER_CLIENT_LIST.append(line.strip())

@@ -43,15 +43,15 @@ function setHostapdOption($option, $value, $hostapd_config_file) {
     $is_present = exec("grep -iEe '^#$option=' $hostapd_config_file");
     if ($is_present != "") {
         $exec = "$bin_sed -i 's/#$option=.*/$option=$value/g' $hostapd_config_file";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
     } else {
         $is_present = exec("grep -iEe '^$option=' $hostapd_config_file");
         if ($is_present == "") {
             $exec = "echo '\n$option=$value' >> $hostapd_config_file";
-            exec_fruitywifi($exec);
+            exec_blackbulb($exec);
         } else {
             $exec = "$bin_sed -i 's/^$option=.*/$option=$value/g' $hostapd_config_file";
-            exec_fruitywifi($exec);
+            exec_blackbulb($exec);
         }
     }
     
@@ -95,7 +95,7 @@ function setHostapd($hostapd_config_file) {
         setHostapdOption($option, $value, $hostapd_config_file);
     } else {
         $exec = "$bin_sed -i 's/^$option=/#$option=/g' $hostapd_config_file";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
     }
     
     // OPTION: wme_enabled
@@ -105,7 +105,7 @@ function setHostapd($hostapd_config_file) {
         setHostapdOption($option, $value, $hostapd_config_file);
     } else {
         $exec = "$bin_sed -i 's/^$option=/#$option=/g' $hostapd_config_file";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
     }
     
     // OPTION: wmm_enabled
@@ -115,7 +115,7 @@ function setHostapd($hostapd_config_file) {
         setHostapdOption($option, $value, $hostapd_config_file);
     } else {
         $exec = "$bin_sed -i 's/^$option=/#$option=/g' $hostapd_config_file";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
     }
     
     // OPTION: ht_capab
@@ -125,7 +125,7 @@ function setHostapd($hostapd_config_file) {
         setHostapdOption($option, $value, $hostapd_config_file);
     } else {
         $exec = "$bin_sed -i 's/^$option=/#$option=/g' $hostapd_config_file";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
     }
     
 }
@@ -135,15 +135,15 @@ function setFruityDNS() {
     
     $exec = "curl -sS 'http://localhost:8000/modules/api/includes/ws_action.php?token=$api_token&api=/module/fruitydns/start' > /dev/null &";
     exec($exec);
-    //exec_fruitywifi($exec);
+    //exec_blackbulb($exec);
     /*
     global $io_in_ip;
-    $log_path = "/usr/share/fruitywifi/logs";
-    $path = "/usr/share/fruitywifi/www/modules/fruitydns";
+    $log_path = "/usr/share/blackbulb/logs";
+    $path = "/usr/share/blackbulb/www/modules/fruitydns";
     include "$path/_info_.php";
     
     $exec = "$path/includes/dnschef-master/dnschef.py --nameserver=8.8.8.8 --logfile=$mod_logs -i $io_in_ip > /dev/null &";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
     */
 }
 
@@ -162,37 +162,37 @@ function setDNSmasq() {
     global $ap_mode;
     global $mod_dnsmasq_dhcp_script;
     
-    $path_dnsmasq_conf = "/usr/share/fruitywifi/conf/dnsmasq.conf";
-    $path_resolv= "/usr/share/fruitywifi/conf/resolv.conf";
+    $path_dnsmasq_conf = "/usr/share/blackbulb/conf/dnsmasq.conf";
+    $path_resolv= "/usr/share/blackbulb/conf/resolv.conf";
     
     // SET INTERFACE
     if ($ap_mode != "2") {
         $exec = "$bin_sed -i 's/^interface=.*/interface=$io_in_iface/g' $path_dnsmasq_conf";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
     } else {
         // AIRMON-NG MODE [$ap_mode == 2]
         $exec = "$bin_sed -i 's/^interface=.*/interface=at0/g' $path_dnsmasq_conf";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
     }
     
     // SET DOMAIN
     $exec = "$bin_sed -i 's/^domain=.*/domain=$dnsmasq_domain/g' $path_dnsmasq_conf";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
     
     // SET LEASE
     $temp = explode(".", $io_in_ip);
     $net = $temp[0].".".$temp[1].".".$temp[2];
     $exec = "$bin_sed -i 's/^dhcp-range=.*/dhcp-range=$net.$mod_dhcp_lease_start,$net.$mod_dhcp_lease_end,12h/g' $path_dnsmasq_conf";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
     
     // DHCP ASSIGN DNS SERVER
     $is_present = exec("grep -iEe '^dhcp-option=6,' $path_dnsmasq_conf");
     if ($is_present == "") {
         $exec = "echo '\ndhcp-option=6,$io_in_ip' >> $path_dnsmasq_conf";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
     } else {
         $exec = "$bin_sed -i 's/^dhcp-option=6,.*/dhcp-option=6,$io_in_ip/g' $path_dnsmasq_conf";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
     }
     
     // DNS OPTION (DNSmasq|FruityDNS)
@@ -200,36 +200,36 @@ function setDNSmasq() {
         $is_present = exec("grep -iEe '^#port=' $path_dnsmasq_conf");
         if ($is_present != "") {
             $exec = "$bin_sed -i 's/#port=.*/port=0/g' $path_dnsmasq_conf";
-            exec_fruitywifi($exec);
+            exec_blackbulb($exec);
         } else {
             $is_present = exec("grep -iEe '^port=' $path_dnsmasq_conf");
             if ($is_present == "") {
                 $exec = "echo '\nport=0' >> $path_dnsmasq_conf";
-                exec_fruitywifi($exec);
+                exec_blackbulb($exec);
             }
         }
     } else if ($mod_dns_type == "dnsmasq") {
         $is_present = exec("grep -iEe '^port=' $path_dnsmasq_conf");
         if ($is_present != "") {
             $exec = "$bin_sed -i 's/port=0/#port=0/g' $path_dnsmasq_conf";
-            exec_fruitywifi($exec);
+            exec_blackbulb($exec);
         }
     }
 
     // REMOVE SERVER OPTION
     //if ($mod_dns_server_option == "0") {
         $exec = "$bin_sed -i 's/^server=/#server=/g' $path_dnsmasq_conf";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
     //}
     
     // SET RESOLV-FILE OPTION	
     $is_present = exec("grep -iEe '^resolv-file=' $path_dnsmasq_conf");
     if ($is_present == "") {
         $exec = "echo '\nresolv-file=$path_resolv' >> $path_dnsmasq_conf";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
     } else {
         $exec = "$bin_sed -i 's/^resolv-file=.*/resolv-file=$path_resolv/g' $path_dnsmasq_conf";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
     }
     
     // SET SPOOF ALL
@@ -238,56 +238,56 @@ function setDNSmasq() {
         $is_present = exec("grep -iEe '^#address=' $path_dnsmasq_conf");
         if ($is_present != "") {
             $exec = "$bin_sed -i 's,^#address=.*,address=/#/$io_in_ip,g' $path_dnsmasq_conf";
-            exec_fruitywifi($exec);
+            exec_blackbulb($exec);
         } else {
             $is_present = exec("grep -iEe '^address=' $path_dnsmasq_conf");
             if ($is_present == "") {
                 $exec = "echo '\naddress=/#/$io_in_ip' >> $path_dnsmasq_conf";
-                exec_fruitywifi($exec);
+                exec_blackbulb($exec);
             }
         }
     } else {
         $exec = "$bin_sed -i 's,^address=.*,#address=/#/$io_in_ip,g' $path_dnsmasq_conf";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
     }
     
-    $exec = "$bin_echo 'nameserver $io_in_ip\nnameserver 8.8.8.8' > /usr/share/fruitywifi/conf/resolv.conf ";
-    exec_fruitywifi($exec);
+    $exec = "$bin_echo 'nameserver $io_in_ip\nnameserver 8.8.8.8' > /usr/share/blackbulb/conf/resolv.conf ";
+    exec_blackbulb($exec);
     
     //$exec = "$bin_echo 'nameserver $io_in_ip\nnameserver 8.8.8.8' > /etc/resolv.conf ";
-    //exec_fruitywifi($exec);
+    //exec_blackbulb($exec);
     
     //$exec = "chattr +i /etc/resolv.conf";
-    //exec_fruitywifi($exec);
+    //exec_blackbulb($exec);
     
     // SET DHCP-SCRIPT
-    $dnsmasq_dhcp_script_path = "/usr/share/fruitywifi/www/modules/ap/includes/dnsmasq-dhcp-script.sh";
+    $dnsmasq_dhcp_script_path = "/usr/share/blackbulb/www/modules/ap/includes/dnsmasq-dhcp-script.sh";
     
     $exec = "chmod 755 $dnsmasq_dhcp_script_path";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
     
     if ($mod_dnsmasq_dhcp_script == "1") {
         $is_present = exec("grep -iEe '^#dhcp-script=' $path_dnsmasq_conf");
         if ($is_present != "") {
             $exec = "$bin_sed -i 's,#dhcp-script=.*,dhcp-script=$dnsmasq_dhcp_script_path,g' $path_dnsmasq_conf";
-            exec_fruitywifi($exec);
+            exec_blackbulb($exec);
         } else {
             $is_present = exec("grep -iEe '^dhcp-script=' $path_dnsmasq_conf");
             if ($is_present == "") {
                 $exec = "echo '\ndhcp-script=$dnsmasq_dhcp_script_path' >> $path_dnsmasq_conf";
-                exec_fruitywifi($exec);
+                exec_blackbulb($exec);
             } else {
                 $exec = "$bin_sed -i 's,dhcp-script=.*,dhcp-script=$dnsmasq_dhcp_script_path,g' $path_dnsmasq_conf";
-                exec_fruitywifi($exec);
+                exec_blackbulb($exec);
             }
         }
     } else {
         $exec = "$bin_sed -i 's/^dhcp-script=/#dhcp-script=/g' $path_dnsmasq_conf";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
     }
     
-    $exec = "$bin_dnsmasq -C /usr/share/fruitywifi/conf/dnsmasq.conf";
-    exec_fruitywifi($exec);
+    $exec = "$bin_dnsmasq -C /usr/share/blackbulb/conf/dnsmasq.conf";
+    exec_blackbulb($exec);
 }
 
 function hostapdStationWhitelist($path_hostapd_conf) {
@@ -297,24 +297,24 @@ function hostapdStationWhitelist($path_hostapd_conf) {
     $is_present = exec("grep -iEe '^#macaddr_acl' $path_hostapd_conf");
     if ($is_present != "") {
         $exec = "$bin_sed -i 's/#macaddr_acl.*/macaddr_acl=1/g' $path_hostapd_conf";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
     } else {
         $is_present = exec("grep -iEe '^macaddr_acl' $path_hostapd_conf");
         if ($is_present == "") {
             $exec = "echo '\nmacaddr_acl=1' >> $path_hostapd_conf";
-            exec_fruitywifi($exec);
+            exec_blackbulb($exec);
         }
     }
     
     $is_present = exec("grep -iEe '^#accept_mac_file' $path_hostapd_conf");
     if ($is_present != "") {
-        $exec = "$bin_sed -i 's,#accept_mac_file.*,accept_mac_file=/usr/share/fruitywifi/conf/pool-station.conf,g' $path_hostapd_conf";
-        exec_fruitywifi($exec);
+        $exec = "$bin_sed -i 's,#accept_mac_file.*,accept_mac_file=/usr/share/blackbulb/conf/pool-station.conf,g' $path_hostapd_conf";
+        exec_blackbulb($exec);
     } else {
         $is_present = exec("grep -iEe '^accept_mac_file' $path_hostapd_conf");
         if ($is_present == "") {
-            $exec = "echo '\naccept_mac_file=/usr/share/fruitywifi/conf/pool-station.conf' >> $path_hostapd_conf";
-            exec_fruitywifi($exec);
+            $exec = "echo '\naccept_mac_file=/usr/share/blackbulb/conf/pool-station.conf' >> $path_hostapd_conf";
+            exec_blackbulb($exec);
         }
     }
 
@@ -327,24 +327,24 @@ function hostapdStationBlacklist($path_hostapd_conf) {
     $is_present = exec("grep -iEe '^#macaddr_acl' $path_hostapd_conf");
     if ($is_present != "") {
         $exec = "$bin_sed -i 's/#macaddr_acl.*/macaddr_acl=0/g' $path_hostapd_conf";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
     } else {
         $is_present = exec("grep -iEe '^macaddr_acl' $path_hostapd_conf");
         if ($is_present == "") {
             $exec = "echo '\nmacaddr_acl=0' >> $path_hostapd_conf";
-            exec_fruitywifi($exec);
+            exec_blackbulb($exec);
         }
     }
     
     $is_present = exec("grep -iEe '^#deny_mac_file' $path_hostapd_conf");
     if ($is_present != "") {
-        $exec = "$bin_sed -i 's,#deny_mac_file.*,deny_mac_file=/usr/share/fruitywifi/conf/pool-station.conf,g' $path_hostapd_conf";
-        exec_fruitywifi($exec);
+        $exec = "$bin_sed -i 's,#deny_mac_file.*,deny_mac_file=/usr/share/blackbulb/conf/pool-station.conf,g' $path_hostapd_conf";
+        exec_blackbulb($exec);
     } else {
         $is_present = exec("grep -iEe '^deny_mac_file' $path_hostapd_conf");
         if ($is_present == "") {
-            $exec = "echo '\ndeny_mac_file=/usr/share/fruitywifi/conf/pool-station.conf' >> $path_hostapd_conf";
-            exec_fruitywifi($exec);
+            $exec = "echo '\ndeny_mac_file=/usr/share/blackbulb/conf/pool-station.conf' >> $path_hostapd_conf";
+            exec_blackbulb($exec);
         }
     }
 }
@@ -353,17 +353,17 @@ function flushIptables() {
     global $bin_iptables;
     
     $exec = "$bin_iptables -F";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
     $exec = "$bin_iptables -t nat -F";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
     $exec = "$bin_iptables -t mangle -F";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
     $exec = "$bin_iptables -X";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
     $exec = "$bin_iptables -t nat -X";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
     $exec = "$bin_iptables -t mangle -X";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
     //echo $exec;
 }
 
@@ -371,9 +371,9 @@ function flushIptablesNetHunter() {
     global $bin_iptables;
     
     $exec = "$bin_iptables -F";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
     $exec = "$bin_iptables -F -t nat";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
 }
 
 function setInIfaceDown() {
@@ -382,19 +382,19 @@ function setInIfaceDown() {
     
     /*
     $exec = "$bin_ifconfig $io_in_iface down";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
     $exec = "$bin_ifconfig $io_in_iface 0.0.0.0";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
     */
     
     $exec = "ip addr flush dev $io_in_iface";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
     
     $exec = "$bin_ifconfig $io_in_iface down";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
     
     $exec = "$bin_ifconfig $io_in_iface 0.0.0.0";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
 }
 
 function setInIfaceUP() {
@@ -404,44 +404,44 @@ function setInIfaceUP() {
     
     /*
     $exec = "$bin_ifconfig $io_in_iface up";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
     $exec = "$bin_ifconfig $io_in_iface up $io_in_ip netmask 255.255.255.0";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
     */
     
     $exec = "rfkill unblock wlan";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
     
     $exec = "ip addr flush dev $io_in_iface";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
     
     $exec = "ip addr add $io_in_ip/24 dev $io_in_iface";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
     
     $exec = "ip link set $io_in_iface up";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
     
     $exec = "ip route add default via $io_in_ip dev $io_in_iface";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
 }
 
 function setIptablesSave() {
     global $bin_iptables;
     
     $exec = "$bin_iptables -F bw_INPUT";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
     $exec = "$bin_iptables -F bw_OUTPUT";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
     
     $exec = "iptables-save > backup-rules.txt";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
 }
 
 function setIptablesRestore() {
     global $bin_iptables;
     
     $exec = "iptables-restore < backup-rules.txt";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
 }
 
 function setForwarding() {
@@ -451,18 +451,18 @@ function setForwarding() {
     
     /*
     $exec = "$bin_echo 1 > /proc/sys/net/ipv4/ip_forward";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
     $exec = "$bin_iptables -t nat -A POSTROUTING -o $io_out_iface -j MASQUERADE";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
     */
     
     $exec = "$bin_iptables -t nat -A POSTROUTING -o $io_out_iface -j MASQUERADE";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
     $exec = "$bin_iptables -A FORWARD -i $io_in_iface -o $io_out_iface -j ACCEPT";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
     
     $exec = "echo '1' > /proc/sys/net/ipv4/ip_forward";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
 }
 
 function setNetHunter() {
@@ -471,11 +471,11 @@ function setNetHunter() {
     global $io_in_ip;
     
     $exec = "ip rule list | awk -F'lookup' '{print \\$2}'";
-    $out_table = exec_fruitywifi($exec);
+    $out_table = exec_blackbulb($exec);
     
     foreach ($out_table as $table) {
         $exec = "ip route show table $table|grep default|grep $io_out_iface";
-        $out_rule = exec_fruitywifi($exec);
+        $out_rule = exec_blackbulb($exec);
         
         foreach ($out_rule as $rule) {
             $flag = True;
@@ -483,7 +483,7 @@ function setNetHunter() {
         }
         if ($flag) {
             $exec = "ip route add ".substr($io_in_ip, 0, -2).".0/24 dev $io_in_iface scope link table $table";
-            exec_fruitywifi($exec);
+            exec_blackbulb($exec);
             break;
         }
     }
@@ -498,7 +498,7 @@ function setNetworkManager() {
     
     if ($mod_network_manager_stop == "1") {
         $exec = "/etc/init.d/network-manager stop";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
     } else {
         
         $exec = "macchanger --show $io_in_iface |grep 'Permanent'";
@@ -509,16 +509,16 @@ function setNetworkManager() {
         $ispresent = exec($exec);
         
         $exec = "$bin_sed -i '/unmanaged/d' /etc/NetworkManager/NetworkManager.conf";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
         $exec = "$bin_sed -i '/\[keyfile\]/d' /etc/NetworkManager/NetworkManager.conf";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
         
         if ($ispresent == "") {
             $exec = "$bin_echo '[keyfile]' >> /etc/NetworkManager/NetworkManager.conf";
-            exec_fruitywifi($exec);
+            exec_blackbulb($exec);
     
             $exec = "$bin_echo 'unmanaged-devices=mac:".$mac[2].";interface-name:".$io_in_iface."' >> /etc/NetworkManager/NetworkManager.conf";
-            exec_fruitywifi($exec);
+            exec_blackbulb($exec);
         }
     }
     
@@ -530,9 +530,9 @@ function cleanNetworkManager() {
     
     // REMOVE lines from NetworkManager
     $exec = "$bin_sed -i '/unmanaged/d' /etc/NetworkManager/NetworkManager.conf";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
     $exec = "$bin_sed -i '/\[keyfile\]/d' /etc/NetworkManager/NetworkManager.conf";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
 }
 
 function killRegex($regex){
@@ -542,7 +542,7 @@ function killRegex($regex){
     
     if (count($output) > 0) {
         $exec = "kill " . $output[0];
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
     }
     
 }
@@ -557,33 +557,33 @@ function copyLogsHistory() {
     
     if ( 0 < filesize( $mod_logs ) ) {
         $exec = "$bin_cp $mod_logs $mod_logs_history/".gmdate("Ymd-H-i-s").".log";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
         
         $exec = "$bin_echo '' > $mod_logs";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
     }
 }
 
 function poolStation($bin_hostapd_cli, $mode) {
-    $data = open_file("/usr/share/fruitywifi/conf/pool-station.conf");
+    $data = open_file("/usr/share/blackbulb/conf/pool-station.conf");
     $out = explode("\n", $data);
     
     for ($i=0; $i < count($out); $i++) {
         if ($out[$i] != "") {
             $exec = "$bin_hostapd_cli -p /var/run/hostapd $mode " . trim($out[$i]);
-            exec_fruitywifi($exec);
+            exec_blackbulb($exec);
         }
     }
 }
 
 function poolSSID($bin_hostapd_cli, $mode) {
-    $data = open_file("/usr/share/fruitywifi/conf/pool-ssid.conf");
+    $data = open_file("/usr/share/blackbulb/conf/pool-ssid.conf");
     $out = explode("\n", $data);
     
     for ($i=0; $i < count($out); $i++) {
         if ($out[$i] != "") {
             $exec = "$bin_hostapd_cli -p /var/run/hostapd $mode " . trim($out[$i]);
-            exec_fruitywifi($exec);
+            exec_blackbulb($exec);
         }
     }
 }
@@ -596,22 +596,22 @@ function getMAC($iface) {
 }
 
 function checkPool() {
-    $filename = '/usr/share/fruitywifi/conf/pool-station.conf';
+    $filename = '/usr/share/blackbulb/conf/pool-station.conf';
     if (!file_exists($filename)) {
         $exec = "touch $filename";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
     }
     
-    $filename = '/usr/share/fruitywifi/conf/pool-ssid.conf';
+    $filename = '/usr/share/blackbulb/conf/pool-ssid.conf';
     if (!file_exists($filename)) {
         $exec = "touch $filename";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
     }
     
-    $filename = '/usr/share/fruitywifi/conf/ssid.conf';
+    $filename = '/usr/share/blackbulb/conf/ssid.conf';
     if (!file_exists($filename)) {
         $exec = "touch $filename";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
     }
 }
 
@@ -630,7 +630,7 @@ if ($worker == "scatter") {
         
         //$exec = "python ap-scatter.py -i mon0 -b $mod_scatter_bssid > /dev/null &";
         $exec = "python ap-scatter.py -i mon0 $opt -e $mod_filter_scatter_ssid > /dev/null &";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
     } else if ($action == "stop") {
         killRegex("ap-scatter.py");
         killRegex("ap-scatter.py");
@@ -641,7 +641,7 @@ if ($worker == "scatter") {
 if ($worker == "picker") {
     if ($action == "start") {
         $exec = "python ap-picker.py -i mon0 > /dev/null &";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
     } else if ($action == "stop") {
         killRegex("ap-picker.py");
         killRegex("ap-picker.py");
@@ -660,7 +660,7 @@ if ($worker == "polite") {
         
         //$exec = "python ap-polite.py -i mon0 -s $mod_filter_polite_station -e $mod_filter_polite_ssid -b $use_bssid  > /dev/null &";
         $exec = "python ap-polite.py -i mon0 -s $mod_filter_polite_station -e $mod_filter_polite_ssid $opt  > /dev/null &";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
     } else if ($action == "stop") {
         killRegex("ap-polite.py");
         killRegex("ap-polite.py");
@@ -669,21 +669,21 @@ if ($worker == "polite") {
 
 if ($worker == "karma") {
     if ($action == "start") {
-        $exec = "/usr/share/fruitywifi/www/modules/karma/includes/hostapd_cli -p /var/run/hostapd karma_enable";
-        exec_fruitywifi($exec);
+        $exec = "/usr/share/blackbulb/www/modules/karma/includes/hostapd_cli -p /var/run/hostapd karma_enable";
+        exec_blackbulb($exec);
     } else if ($action == "stop") {
-        $exec = "/usr/share/fruitywifi/www/modules/karma/includes/hostapd_cli -p /var/run/hostapd karma_disable";
-        exec_fruitywifi($exec);
+        $exec = "/usr/share/blackbulb/www/modules/karma/includes/hostapd_cli -p /var/run/hostapd karma_disable";
+        exec_blackbulb($exec);
     }
 }
 
 if ($worker == "mana") {
     if ($action == "start") {
-        $exec = "/usr/share/fruitywifi/www/modules/mana/includes/hostapd_cli -p /var/run/hostapd karma_enable";
-        exec_fruitywifi($exec);
+        $exec = "/usr/share/blackbulb/www/modules/mana/includes/hostapd_cli -p /var/run/hostapd karma_enable";
+        exec_blackbulb($exec);
     } else if ($action == "stop") {
-        $exec = "/usr/share/fruitywifi/www/modules/mana/includes/hostapd_cli -p /var/run/hostapd karma_disable";
-        exec_fruitywifi($exec);
+        $exec = "/usr/share/blackbulb/www/modules/mana/includes/hostapd_cli -p /var/run/hostapd karma_disable";
+        exec_blackbulb($exec);
     }
 }
 
@@ -704,15 +704,15 @@ if($service != "" and $ap_mode == "1") {
         setInIfaceDown();
         
         $exec = "$bin_killall hostapd";	
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
 
         killRegex("hostapd");
         
         $exec = "$bin_rm /var/run/hostapd/$io_in_iface";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
 
         $exec = "$bin_killall dnsmasq";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
 
         killRegex("dnsmasq");
         killRegex("dnschef.py");
@@ -722,31 +722,31 @@ if($service != "" and $ap_mode == "1") {
         
         /*
         $exec = "$bin_echo 'nameserver $io_in_ip\nnameserver 8.8.8.8' > /etc/resolv.conf ";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
         
         $exec = "chattr +i /etc/resolv.conf";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
         
-        $exec = "$bin_dnsmasq -C /usr/share/fruitywifi/conf/dnsmasq.conf";
-        exec_fruitywifi($exec);
+        $exec = "$bin_dnsmasq -C /usr/share/blackbulb/conf/dnsmasq.conf";
+        exec_blackbulb($exec);
         */
         
         // SET HOSTAPD CONF
         if ($hostapd_secure == 1) {
             // BLACKLIST|WHITELIST PATH
-            $path_hostapd_conf = "/usr/share/fruitywifi/conf/hostapd-secure.conf";
+            $path_hostapd_conf = "/usr/share/blackbulb/conf/hostapd-secure.conf";
         } else {
             // BLACKLIST|WHITELIST PATH
-            $path_hostapd_conf = "/usr/share/fruitywifi/conf/hostapd.conf";
+            $path_hostapd_conf = "/usr/share/blackbulb/conf/hostapd.conf";
         }
         
         // SET HOSTAPD [BLACK|WHITE]
         $exec = "$bin_sed -i 's/^macaddr_acl.*/#macaddr_acl=0/g' $path_hostapd_conf";
-        exec_fruitywifi($exec);
-        $exec = "$bin_sed -i 's,^accept_mac_file.*,#accept_mac_file=/usr/share/fruitywifi/conf/pool-station.conf,g' $path_hostapd_conf";
-        exec_fruitywifi($exec);
-        $exec = "$bin_sed -i 's,^deny_mac_file.*,#deny_mac_file=/usr/share/fruitywifi/conf/pool-station.conf,g' $path_hostapd_conf";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
+        $exec = "$bin_sed -i 's,^accept_mac_file.*,#accept_mac_file=/usr/share/blackbulb/conf/pool-station.conf,g' $path_hostapd_conf";
+        exec_blackbulb($exec);
+        $exec = "$bin_sed -i 's,^deny_mac_file.*,#deny_mac_file=/usr/share/blackbulb/conf/pool-station.conf,g' $path_hostapd_conf";
+        exec_blackbulb($exec);
         
         if ($mod_filter_karma_station == "blacklist") {
             hostapdStationBlacklist($path_hostapd_conf);
@@ -757,62 +757,62 @@ if($service != "" and $ap_mode == "1") {
         //Verifies if karma-hostapd is installed
         if ($hostapd_secure == 1) {
             
-            $hostapd_config_file = "/usr/share/fruitywifi/conf/hostapd-secure.conf";
+            $hostapd_config_file = "/usr/share/blackbulb/conf/hostapd-secure.conf";
             
             // SET HOSTAPD
             setHostapd($hostapd_config_file);
             
             //REPLACE SSID
-            $exec = "$bin_sed -i 's/^ssid=.*/ssid=".$hostapd_ssid."/g' /usr/share/fruitywifi/conf/hostapd-secure.conf";
-            exec_fruitywifi($exec);
+            $exec = "$bin_sed -i 's/^ssid=.*/ssid=".$hostapd_ssid."/g' /usr/share/blackbulb/conf/hostapd-secure.conf";
+            exec_blackbulb($exec);
             
             //REPLACE IFACE                
-            $exec = "$bin_sed -i 's/^interface=.*/interface=".$io_in_iface."/g' /usr/share/fruitywifi/conf/hostapd-secure.conf";
-            exec_fruitywifi($exec);
+            $exec = "$bin_sed -i 's/^interface=.*/interface=".$io_in_iface."/g' /usr/share/blackbulb/conf/hostapd-secure.conf";
+            exec_blackbulb($exec);
             
             //REPLACE WPA_PASSPHRASE
-            $exec = "$bin_sed -i 's/wpa_passphrase=.*/wpa_passphrase=".$hostapd_wpa_passphrase."/g' /usr/share/fruitywifi/conf/hostapd-secure.conf";
-            exec_fruitywifi($exec);
+            $exec = "$bin_sed -i 's/wpa_passphrase=.*/wpa_passphrase=".$hostapd_wpa_passphrase."/g' /usr/share/blackbulb/conf/hostapd-secure.conf";
+            exec_blackbulb($exec);
             
             //EXTRACT MACADDRESS
             unset($output);
             $output = getIfaceMAC($io_in_iface);
             
             //REPLACE MAC
-            $exec = "$bin_sed -i 's/^bssid=.*/bssid=".$output."/g' /usr/share/fruitywifi/conf/hostapd-secure.conf";
-            exec_fruitywifi($exec);
+            $exec = "$bin_sed -i 's/^bssid=.*/bssid=".$output."/g' /usr/share/blackbulb/conf/hostapd-secure.conf";
+            exec_blackbulb($exec);
             
-            $exec = "/usr/sbin/hostapd -P /var/run/hostapd -B /usr/share/fruitywifi/conf/hostapd-secure.conf";
+            $exec = "/usr/sbin/hostapd -P /var/run/hostapd -B /usr/share/blackbulb/conf/hostapd-secure.conf";
         } else {
             
-            $hostapd_config_file = "/usr/share/fruitywifi/conf/hostapd.conf";
+            $hostapd_config_file = "/usr/share/blackbulb/conf/hostapd.conf";
             
             // SET HOSTAPD
             setHostapd($hostapd_config_file);
             
             //REPLACE SSID
-            $exec = "$bin_sed -i 's/^ssid=.*/ssid=".$hostapd_ssid."/g' /usr/share/fruitywifi/conf/hostapd.conf";
-            exec_fruitywifi($exec);
+            $exec = "$bin_sed -i 's/^ssid=.*/ssid=".$hostapd_ssid."/g' /usr/share/blackbulb/conf/hostapd.conf";
+            exec_blackbulb($exec);
             
             //REPLACE IFACE                
-            $exec = "$bin_sed -i 's/^interface=.*/interface=".$io_in_iface."/g' /usr/share/fruitywifi/conf/hostapd.conf";
-            exec_fruitywifi($exec);
+            $exec = "$bin_sed -i 's/^interface=.*/interface=".$io_in_iface."/g' /usr/share/blackbulb/conf/hostapd.conf";
+            exec_blackbulb($exec);
             
             //REPLACE WPA_PASSPHRASE
-            $exec = "$bin_sed -i 's/wpa_passphrase=.*/wpa_passphrase=".$hostapd_wpa_passphrase."/g' /usr/share/fruitywifi/conf/hostapd.conf";
-            exec_fruitywifi($exec);
+            $exec = "$bin_sed -i 's/wpa_passphrase=.*/wpa_passphrase=".$hostapd_wpa_passphrase."/g' /usr/share/blackbulb/conf/hostapd.conf";
+            exec_blackbulb($exec);
             
             //EXTRACT MACADDRESS
             unset($output);
             $output = getIfaceMAC($io_in_iface);
             
             //REPLACE BSSID
-            $exec = "$bin_sed -i 's/^bssid=.*/bssid=".$output."/g' /usr/share/fruitywifi/conf/hostapd.conf";
-            exec_fruitywifi($exec);
+            $exec = "$bin_sed -i 's/^bssid=.*/bssid=".$output."/g' /usr/share/blackbulb/conf/hostapd.conf";
+            exec_blackbulb($exec);
             
-            $exec = "/usr/sbin/hostapd -P /var/run/hostapd -B /usr/share/fruitywifi/conf/hostapd.conf";
+            $exec = "/usr/sbin/hostapd -P /var/run/hostapd -B /usr/share/blackbulb/conf/hostapd.conf";
         }
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
         
         // IPTABLES	FLUSH
         if ($mod_nethunter == "1") {
@@ -826,8 +826,8 @@ if($service != "" and $ap_mode == "1") {
         setForwarding();
         
         // CLEAN DHCP log
-        $exec = "$bin_echo '' > /usr/share/fruitywifi/logs/dhcp.leases";
-        exec_fruitywifi($exec);
+        $exec = "$bin_echo '' > /usr/share/blackbulb/logs/dhcp.leases";
+        exec_blackbulb($exec);
         
         // SET DNSMASQ (DHCP|DNS)
         setDNSmasq();
@@ -843,20 +843,20 @@ if($service != "" and $ap_mode == "1") {
         cleanNetworkManager();
         
         $exec = "$bin_killall hostapd";	
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
 
         killRegex("hostapd");
         
         $exec = "$bin_rm /var/run/hostapd/$io_in_iface";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
         
         /*
         $exec = "chattr -i /etc/resolv.conf";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
         */
         
         $exec = "$bin_killall dnsmasq";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
 
         killRegex("dnsmasq");
         killRegex("dnschef.py");
@@ -897,22 +897,22 @@ if($service != "" and $ap_mode == "2") {
         killRegex("airbase-ng");
 
         $exec = "$bin_killall dnsmasq";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
 
         killRegex("dnsmasq");
         killRegex("dnschef.py");
 
         // EXEC AIRBASE
         $exec = "/usr/sbin/airbase-ng -e $hostapd_ssid -c 2 $io_in_iface > /tmp/airbase.log &"; //-P (all)
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
 
         $exec = "sleep 1";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
         
         $exec = "$bin_ifconfig at0 up";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
         $exec = "$bin_ifconfig at0 up $io_in_ip netmask 255.255.255.0";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
         
         
         // IPTABLES	FLUSH
@@ -927,8 +927,8 @@ if($service != "" and $ap_mode == "2") {
         setForwarding();
         
         // CLEAN DHCP log
-        $exec = "$bin_echo '' > /usr/share/fruitywifi/logs/dhcp.leases";
-        exec_fruitywifi($exec);
+        $exec = "$bin_echo '' > /usr/share/blackbulb/logs/dhcp.leases";
+        exec_blackbulb($exec);
         
         // SET DNSMASQ (DHCP|DNS)
         setDNSmasq();
@@ -946,7 +946,7 @@ if($service != "" and $ap_mode == "2") {
         killRegex("airbase-ng");
         
         $exec = "$bin_killall dnsmasq";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
 
         killRegex("dnsmasq");
         killRegex("dnschef.py");
@@ -955,10 +955,10 @@ if($service != "" and $ap_mode == "2") {
         setInIfaceDown();
         
         $exec = "ip addr flush dev at0";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
         
         $exec = "$bin_ifconfig at0 down";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
         
         // IPTABLES	FLUSH
         if ($mod_nethunter == "1") {
@@ -988,15 +988,15 @@ if($service != ""  and $ap_mode == "3") {
         setInIfaceDown();
         
         $exec = "$bin_killall hostapd";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
 
         killRegex("hostapd");
         
         $exec = "$bin_rm /var/run/hostapd/$io_in_iface";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
 
         $exec = "$bin_killall dnsmasq";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
 
         killRegex("dnsmasq");
         killRegex("dnschef.py");
@@ -1006,31 +1006,31 @@ if($service != ""  and $ap_mode == "3") {
         
         /*
         $exec = "$bin_echo 'nameserver $io_in_ip\nnameserver 8.8.8.8' > /etc/resolv.conf ";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
         
         $exec = "chattr +i /etc/resolv.conf";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
         
-        $exec = "$bin_dnsmasq -C /usr/share/fruitywifi/conf/dnsmasq.conf";
-        exec_fruitywifi($exec);
+        $exec = "$bin_dnsmasq -C /usr/share/blackbulb/conf/dnsmasq.conf";
+        exec_blackbulb($exec);
         */
         
         // SET HOSTAPD CONF
         if ($hostapd_secure == 1) {
             // BLACKLIST|WHITELIST PATH
-            $path_hostapd_conf = "/usr/share/fruitywifi/www/modules/mana/includes/conf/hostapd-secure.conf";
+            $path_hostapd_conf = "/usr/share/blackbulb/www/modules/mana/includes/conf/hostapd-secure.conf";
         } else {
             // BLACKLIST|WHITELIST PATH
-            $path_hostapd_conf = "/usr/share/fruitywifi/www/modules/mana/includes/conf/hostapd.conf";
+            $path_hostapd_conf = "/usr/share/blackbulb/www/modules/mana/includes/conf/hostapd.conf";
         }
         
         // SET HOSTAPD [BLACK|WHITE]
         $exec = "$bin_sed -i 's/^macaddr_acl.*/#macaddr_acl=0/g' $path_hostapd_conf";
-        exec_fruitywifi($exec);
-        $exec = "$bin_sed -i 's,^accept_mac_file.*,#accept_mac_file=/usr/share/fruitywifi/conf/pool-station.conf,g' $path_hostapd_conf";
-        exec_fruitywifi($exec);
-        $exec = "$bin_sed -i 's,^deny_mac_file.*,#deny_mac_file=/usr/share/fruitywifi/conf/pool-station.conf,g' $path_hostapd_conf";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
+        $exec = "$bin_sed -i 's,^accept_mac_file.*,#accept_mac_file=/usr/share/blackbulb/conf/pool-station.conf,g' $path_hostapd_conf";
+        exec_blackbulb($exec);
+        $exec = "$bin_sed -i 's,^deny_mac_file.*,#deny_mac_file=/usr/share/blackbulb/conf/pool-station.conf,g' $path_hostapd_conf";
+        exec_blackbulb($exec);
         
         if ($mod_filter_karma_station == "blacklist") {
             hostapdStationBlacklist($path_hostapd_conf);
@@ -1041,8 +1041,8 @@ if($service != ""  and $ap_mode == "3") {
         //Verifies if mana-hostapd is installed
         if ($hostapd_secure == 1) {
             
-            if (file_exists("/usr/share/fruitywifi/www/modules/mana/includes/hostapd")) {
-                include "/usr/share/fruitywifi/www/modules/mana/_info_.php";
+            if (file_exists("/usr/share/blackbulb/www/modules/mana/includes/hostapd")) {
+                include "/usr/share/blackbulb/www/modules/mana/_info_.php";
                 
                 $hostapd_config_file = "$mod_path/includes/conf/hostapd-secure.conf";
                 
@@ -1057,15 +1057,15 @@ if($service != ""  and $ap_mode == "3") {
                 
                 //REPLACE SSID
                 $exec = "$bin_sed -i 's/^ssid=.*/ssid=".$hostapd_ssid."/g' $mod_path/includes/conf/hostapd-secure.conf";
-                exec_fruitywifi($exec);
+                exec_blackbulb($exec);
                 
                 //REPLACE IFACE                
                 $exec = "$bin_sed -i 's/^interface=.*/interface=".$io_in_iface."/g' $mod_path/includes/conf/hostapd-secure.conf";
-                exec_fruitywifi($exec);
+                exec_blackbulb($exec);
                 
                 //REPLACE WPA_PASSPHRASE
                 $exec = "$bin_sed -i 's/wpa_passphrase=.*/wpa_passphrase=".$hostapd_wpa_passphrase."/g' $mod_path/includes/conf/hostapd-secure.conf";
-                exec_fruitywifi($exec);
+                exec_blackbulb($exec);
                 
                 //EXTRACT MACADDRESS
                 unset($output);
@@ -1073,17 +1073,17 @@ if($service != ""  and $ap_mode == "3") {
                 
                 //REPLACE MAC
                 $exec = "$bin_sed -i 's/^bssid=.*/bssid=".$output."/g' $mod_path/includes/conf/hostapd-secure.conf";
-                exec_fruitywifi($exec);
+                exec_blackbulb($exec);
                 
                 $exec = "$bin_hostapd $mod_path/includes/conf/hostapd-secure.conf -f $mod_logs -B"; // >> $mod_log &
             } else {
-                $exec = "/usr/sbin/hostapd -P /var/run/hostapd -B /usr/share/fruitywifi/conf/hostapd-secure.conf";
+                $exec = "/usr/sbin/hostapd -P /var/run/hostapd -B /usr/share/blackbulb/conf/hostapd-secure.conf";
             }
             
         } else {
             
-            if (file_exists("/usr/share/fruitywifi/www/modules/mana/includes/hostapd")) {
-                include "/usr/share/fruitywifi/www/modules/mana/_info_.php";
+            if (file_exists("/usr/share/blackbulb/www/modules/mana/includes/hostapd")) {
+                include "/usr/share/blackbulb/www/modules/mana/_info_.php";
                 
                 $hostapd_config_file = "$mod_path/includes/conf/hostapd.conf";
                 
@@ -1098,11 +1098,11 @@ if($service != ""  and $ap_mode == "3") {
                 
                 //REPLACE SSID
                 $exec = "$bin_sed -i 's/^ssid=.*/ssid=".$hostapd_ssid."/g' $mod_path/includes/conf/hostapd.conf";
-                exec_fruitywifi($exec);
+                exec_blackbulb($exec);
                 
                 //REPLACE IFACE                
                 $exec = "$bin_sed -i 's/^interface=.*/interface=".$io_in_iface."/g' $mod_path/includes/conf/hostapd.conf";
-                exec_fruitywifi($exec);
+                exec_blackbulb($exec);
                 
                 //EXTRACT MACADDRESS
                 unset($output);
@@ -1110,15 +1110,15 @@ if($service != ""  and $ap_mode == "3") {
                 
                 //REPLACE MAC
                 $exec = "$bin_sed -i 's/^bssid=.*/bssid=".$output."/g' $mod_path/includes/conf/hostapd.conf";
-                exec_fruitywifi($exec);
+                exec_blackbulb($exec);
                 
                 $exec = "$bin_hostapd $mod_path/includes/conf/hostapd.conf -t -d -f $mod_logs -B";
             } else {
-                $exec = "/usr/sbin/hostapd -P /var/run/hostapd -B /usr/share/fruitywifi/conf/hostapd.conf";
+                $exec = "/usr/sbin/hostapd -P /var/run/hostapd -B /usr/share/blackbulb/conf/hostapd.conf";
             }
             
         }
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
         
         // IPTABLES	FLUSH
         if ($mod_nethunter == "1") {
@@ -1132,8 +1132,8 @@ if($service != ""  and $ap_mode == "3") {
         setForwarding();
         
         // CLEAN DHCP log
-        $exec = "$bin_echo '' > /usr/share/fruitywifi/logs/dhcp.leases";
-        exec_fruitywifi($exec);
+        $exec = "$bin_echo '' > /usr/share/blackbulb/logs/dhcp.leases";
+        exec_blackbulb($exec);
         
         // SET DNSMASQ (DHCP|DNS)
         setDNSmasq();
@@ -1147,14 +1147,14 @@ if($service != ""  and $ap_mode == "3") {
         if ($mod_filter_karma_station == "blacklist") {
             // SET KARMA_BLACK
             $exec = "$bin_hostapd_cli -p /var/run/hostapd karma_black";
-            exec_fruitywifi($exec);
+            exec_blackbulb($exec);
             
             poolStation($bin_hostapd_cli, "karma_add_black_mac");
             
         } else if ($mod_filter_karma_station == "whitelist") {
             // SET KARMA_WHITE
             $exec = "$bin_hostapd_cli -p /var/run/hostapd karma_white";
-            exec_fruitywifi($exec);
+            exec_blackbulb($exec);
             
             poolStation($bin_hostapd_cli, "karma_add_white_mac");
         }
@@ -1165,20 +1165,20 @@ if($service != ""  and $ap_mode == "3") {
         cleanNetworkManager();
     
         $exec = "$bin_killall hostapd";	
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
 
         killRegex("hostapd");
         
         $exec = "$bin_rm /var/run/hostapd/$io_in_iface";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
         
         /*
         $exec = "chattr -i /etc/resolv.conf";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
         */
         
         $exec = "$bin_killall dnsmasq";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
 
         killRegex("dnsmasq");
         killRegex("dnschef.py");
@@ -1214,15 +1214,15 @@ if($service != ""  and $ap_mode == "4") {
         setInIfaceDown();
         
         $exec = "$bin_killall hostapd";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
 
         killRegex("hostapd");
         
         $exec = "$bin_rm /var/run/hostapd/$io_in_iface";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
 
         $exec = "$bin_killall dnsmasq";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
 
         killRegex("dnsmasq");
         killRegex("dnschef.py");
@@ -1232,31 +1232,31 @@ if($service != ""  and $ap_mode == "4") {
         
         /*
         $exec = "$bin_echo 'nameserver $io_in_ip\nnameserver 8.8.8.8' > /etc/resolv.conf ";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
         
         $exec = "chattr +i /etc/resolv.conf";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
         
-        $exec = "$bin_dnsmasq -C /usr/share/fruitywifi/conf/dnsmasq.conf";
-        exec_fruitywifi($exec);
+        $exec = "$bin_dnsmasq -C /usr/share/blackbulb/conf/dnsmasq.conf";
+        exec_blackbulb($exec);
         */
         
         // SET HOSTAPD CONF
         if ($hostapd_secure == 1) {
             // BLACKLIST|WHITELIST PATH
-            $path_hostapd_conf = "/usr/share/fruitywifi/www/modules/karma/includes/conf/hostapd-secure.conf";
+            $path_hostapd_conf = "/usr/share/blackbulb/www/modules/karma/includes/conf/hostapd-secure.conf";
         } else {
             // BLACKLIST|WHITELIST PATH
-            $path_hostapd_conf = "/usr/share/fruitywifi/www/modules/karma/includes/conf/hostapd.conf";
+            $path_hostapd_conf = "/usr/share/blackbulb/www/modules/karma/includes/conf/hostapd.conf";
         }
         
         // SET HOSTAPD [BLACK|WHITE]
         $exec = "$bin_sed -i 's/^macaddr_acl.*/#macaddr_acl=0/g' $path_hostapd_conf";
-        exec_fruitywifi($exec);
-        $exec = "$bin_sed -i 's,^accept_mac_file.*,#accept_mac_file=/usr/share/fruitywifi/conf/pool-station.conf,g' $path_hostapd_conf";
-        exec_fruitywifi($exec);
-        $exec = "$bin_sed -i 's,^deny_mac_file.*,#deny_mac_file=/usr/share/fruitywifi/conf/pool-station.conf,g' $path_hostapd_conf";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
+        $exec = "$bin_sed -i 's,^accept_mac_file.*,#accept_mac_file=/usr/share/blackbulb/conf/pool-station.conf,g' $path_hostapd_conf";
+        exec_blackbulb($exec);
+        $exec = "$bin_sed -i 's,^deny_mac_file.*,#deny_mac_file=/usr/share/blackbulb/conf/pool-station.conf,g' $path_hostapd_conf";
+        exec_blackbulb($exec);
         
         if ($mod_filter_karma_station == "blacklist") {
             hostapdStationBlacklist($path_hostapd_conf);
@@ -1267,8 +1267,8 @@ if($service != ""  and $ap_mode == "4") {
         //Verifies if karma-hostapd is installed
         if ($hostapd_secure == 1) {
             
-            if (file_exists("/usr/share/fruitywifi/www/modules/karma/includes/hostapd")) {
-                include "/usr/share/fruitywifi/www/modules/karma/_info_.php";
+            if (file_exists("/usr/share/blackbulb/www/modules/karma/includes/hostapd")) {
+                include "/usr/share/blackbulb/www/modules/karma/_info_.php";
                 
                 $hostapd_config_file = "$mod_path/includes/conf/hostapd-secure.conf";
             
@@ -1277,15 +1277,15 @@ if($service != ""  and $ap_mode == "4") {
                 
                 //REPLACE SSID
                 $exec = "$bin_sed -i 's/^ssid=.*/ssid=".$hostapd_ssid."/g' $mod_path/includes/conf/hostapd-secure.conf";
-                exec_fruitywifi($exec);
+                exec_blackbulb($exec);
                 
                 //REPLACE IFACE                
                 $exec = "$bin_sed -i 's/^interface=.*/interface=".$io_in_iface."/g' $mod_path/includes/conf/hostapd-secure.conf";
-                exec_fruitywifi($exec);
+                exec_blackbulb($exec);
                 
                 //REPLACE WPA_PASSPHRASE
                 $exec = "$bin_sed -i 's/wpa_passphrase=.*/wpa_passphrase=".$hostapd_wpa_passphrase."/g' $mod_path/includes/conf/hostapd-secure.conf";
-                exec_fruitywifi($exec);
+                exec_blackbulb($exec);
                 
                 //EXTRACT MACADDRESS
                 unset($output);
@@ -1293,17 +1293,17 @@ if($service != ""  and $ap_mode == "4") {
                 
                 //REPLACE MAC
                 $exec = "$bin_sed -i 's/^bssid=.*/bssid=".$output."/g' $mod_path/includes/conf/hostapd-secure.conf";
-                exec_fruitywifi($exec);
+                exec_blackbulb($exec);
                 
                 $exec = "$bin_hostapd $mod_path/includes/conf/hostapd-secure.conf -d -f $mod_logs -B";
             } else {
-                $exec = "/usr/sbin/hostapd -P /var/run/hostapd -B /usr/share/fruitywifi/conf/hostapd-secure.conf";
+                $exec = "/usr/sbin/hostapd -P /var/run/hostapd -B /usr/share/blackbulb/conf/hostapd-secure.conf";
             }
             
         } else {
             
-            if (file_exists("/usr/share/fruitywifi/www/modules/karma/includes/hostapd")) {
-                include "/usr/share/fruitywifi/www/modules/karma/_info_.php";
+            if (file_exists("/usr/share/blackbulb/www/modules/karma/includes/hostapd")) {
+                include "/usr/share/blackbulb/www/modules/karma/_info_.php";
                 
                 $hostapd_config_file = "$mod_path/includes/conf/hostapd.conf";
             
@@ -1312,11 +1312,11 @@ if($service != ""  and $ap_mode == "4") {
                 
                 //REPLACE SSID
                 $exec = "$bin_sed -i 's/^ssid=.*/ssid=".$hostapd_ssid."/g' $mod_path/includes/conf/hostapd.conf";
-                exec_fruitywifi($exec);
+                exec_blackbulb($exec);
                 
                 //REPLACE IFACE                
                 $exec = "$bin_sed -i 's/^interface=.*/interface=".$io_in_iface."/g' $mod_path/includes/conf/hostapd.conf";
-                exec_fruitywifi($exec);
+                exec_blackbulb($exec);
                 
                 //EXTRACT MACADDRESS
                 unset($output);
@@ -1324,15 +1324,15 @@ if($service != ""  and $ap_mode == "4") {
                 
                 //REPLACE MAC
                 $exec = "$bin_sed -i 's/^bssid=.*/bssid=".$output."/g' $mod_path/includes/conf/hostapd.conf";
-                exec_fruitywifi($exec);
+                exec_blackbulb($exec);
                 
                 $exec = "$bin_hostapd $mod_path/includes/conf/hostapd.conf -dd -f $mod_logs -B";
             } else {
-                $exec = "/usr/sbin/hostapd -P /var/run/hostapd -B /usr/share/fruitywifi/conf/hostapd.conf";
+                $exec = "/usr/sbin/hostapd -P /var/run/hostapd -B /usr/share/blackbulb/conf/hostapd.conf";
             }
             
         }
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
         
         /// IPTABLES FLUSH
         if ($mod_nethunter == "1") {
@@ -1346,8 +1346,8 @@ if($service != ""  and $ap_mode == "4") {
         setForwarding();
         
         // CLEAN DHCP log
-        $exec = "$bin_echo '' > /usr/share/fruitywifi/logs/dhcp.leases";
-        exec_fruitywifi($exec);
+        $exec = "$bin_echo '' > /usr/share/blackbulb/logs/dhcp.leases";
+        exec_blackbulb($exec);
         
         // SET DNSMASQ (DHCP|DNS)
         setDNSmasq();
@@ -1361,14 +1361,14 @@ if($service != ""  and $ap_mode == "4") {
         if ($mod_filter_karma_station == "blacklist") {
             // SET KARMA_BLACK
             $exec = "$bin_hostapd_cli -p /var/run/hostapd karma_black";
-            exec_fruitywifi($exec);
+            exec_blackbulb($exec);
             
             poolStation($bin_hostapd_cli, "karma_add_black_mac");
             
         } else if ($mod_filter_karma_station == "whitelist") {
             // SET KARMA_WHITE
             $exec = "$bin_hostapd_cli -p /var/run/hostapd karma_white";
-            exec_fruitywifi($exec);
+            exec_blackbulb($exec);
             
             poolStation($bin_hostapd_cli, "karma_add_white_mac");
         }
@@ -1377,14 +1377,14 @@ if($service != ""  and $ap_mode == "4") {
         if ($mod_filter_karma_ssid == "blacklist") {
             // SET KARMA_BLACK
             $exec = "$bin_hostapd_cli -p /var/run/hostapd karma_black";
-            exec_fruitywifi($exec);
+            exec_blackbulb($exec);
             
             poolSSID($bin_hostapd_cli, "karma_add_ssid");
             
         } else if ($mod_filter_karma_ssid == "whitelist") {
             // SET KARMA_WHITE
             $exec = "$bin_hostapd_cli -p /var/run/hostapd karma_white";
-            exec_fruitywifi($exec);
+            exec_blackbulb($exec);
             
             poolSSID($bin_hostapd_cli, "karma_add_ssid");
         }
@@ -1396,20 +1396,20 @@ if($service != ""  and $ap_mode == "4") {
         cleanNetworkManager();
 
         $exec = "$bin_killall hostapd";	
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
 
         killRegex("hostapd");
         
         $exec = "$bin_rm /var/run/hostapd/$io_in_iface";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
         
         /*
         $exec = "chattr -i /etc/resolv.conf";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
         */
         
         $exec = "$bin_killall dnsmasq";
-        exec_fruitywifi($exec);
+        exec_blackbulb($exec);
 
         killRegex("dnsmasq");
         killRegex("dnschef.py");
@@ -1434,10 +1434,10 @@ if($service != ""  and $ap_mode == "4") {
 if ($install == "install_$mod_name") {
 
     $exec = "chmod 755 install.sh";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
 
     $exec = "$bin_sudo ./install.sh > $log_path/install.txt &";
-    exec_fruitywifi($exec);
+    exec_blackbulb($exec);
 
     header("Location: ../../install.php?module=ap");
     exit;

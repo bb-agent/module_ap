@@ -72,7 +72,7 @@ BCAST = "ff:ff:ff:ff:ff:ff"
 
 def loadFILTER():
     FILTER =[]
-    TEMP = "/usr/share/fruitywifi/conf/pool-ssid.conf"    
+    TEMP = "/usr/share/blackbulb/conf/pool-ssid.conf"
     with open(TEMP) as file:
         for line in file:
             FILTER.append(line.strip())
@@ -87,13 +87,13 @@ def loadSSID(FILTER_SSID):
         
     elif FILTER_SSID == "blacklist":
         FILTER = loadFILTER()
-        TEMP = "/usr/share/fruitywifi/conf/ssid.conf"
+        TEMP = "/usr/share/blackbulb/conf/ssid.conf"
         with open(TEMP) as file:
             for line in file:
                 if line.strip() not in FILTER:
                     SSIDS.append(line.strip())              
     else:
-        TEMP = "/usr/share/fruitywifi/conf/ssid.conf"
+        TEMP = "/usr/share/blackbulb/conf/ssid.conf"
         
         with open(TEMP) as file:
             for line in file:

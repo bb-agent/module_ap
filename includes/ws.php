@@ -23,7 +23,7 @@ class WebServiceExtended extends WebService {
 	// POOL STATION
 	public function getPoolStation()
 	{
-		$data = open_file("/usr/share/fruitywifi/conf/pool-station.conf");
+		$data = open_file("/usr/share/blackbulb/conf/pool-station.conf");
 		$out = explode("\n", $data);
 		
 		$output = [];
@@ -39,10 +39,10 @@ class WebServiceExtended extends WebService {
 	{
 		include "functions.php";
 		
-		$file = "/usr/share/fruitywifi/conf/pool-station.conf";
+		$file = "/usr/share/blackbulb/conf/pool-station.conf";
 		
 		$exec = "echo '".$value."' >> $file";
-		$out = exec_fruitywifi($exec);
+		$out = exec_blackbulb($exec);
 		
 		echo json_encode($value);
 	}
@@ -51,10 +51,10 @@ class WebServiceExtended extends WebService {
 	{
 		include "functions.php";
 		
-		$file = "/usr/share/fruitywifi/conf/pool-station.conf";
+		$file = "/usr/share/blackbulb/conf/pool-station.conf";
 		
 		$exec = "sed -i '/".$value."/d' $file";
-		$out = exec_fruitywifi($exec);
+		$out = exec_blackbulb($exec);
 		
 		echo json_encode($value);
 	}
@@ -62,7 +62,7 @@ class WebServiceExtended extends WebService {
 	// POOL SSID
 	public function getPoolSSID()
 	{
-		$data = open_file("/usr/share/fruitywifi/conf/pool-ssid.conf");
+		$data = open_file("/usr/share/blackbulb/conf/pool-ssid.conf");
 		$out = explode("\n", $data);
 		
 		$output = [];
@@ -78,10 +78,10 @@ class WebServiceExtended extends WebService {
 	{
 		include "functions.php";
 		
-		$file = "/usr/share/fruitywifi/conf/pool-ssid.conf";
+		$file = "/usr/share/blackbulb/conf/pool-ssid.conf";
 		
 		$exec = "echo '".$value."' >> $file";
-		$out = exec_fruitywifi($exec);
+		$out = exec_blackbulb($exec);
 		
 		echo json_encode($value);
 	}
@@ -90,10 +90,10 @@ class WebServiceExtended extends WebService {
 	{
 		include "functions.php";
 		
-		$file = "/usr/share/fruitywifi/conf/pool-ssid.conf";
+		$file = "/usr/share/blackbulb/conf/pool-ssid.conf";
 		
 		$exec = "sed -i '/".$value."/d' $file";
-		$out = exec_fruitywifi($exec);
+		$out = exec_blackbulb($exec);
 		
 		echo json_encode($value);
 	}
@@ -105,7 +105,7 @@ class WebServiceExtended extends WebService {
 		include "functions.php";
 		include "../../../config/config.php";
 		
-		$data = open_file("/usr/share/fruitywifi/logs/dhcp.leases");
+		$data = open_file("/usr/share/blackbulb/logs/dhcp.leases");
 		$out = explode("\n", $data);
 		
 		$leases = [];
@@ -119,7 +119,7 @@ class WebServiceExtended extends WebService {
 		unset($data);
 		
 		$exec = "iw dev $io_in_iface station dump | sed -e 's/^\\t/|/g' | tr '\\n' ' ' | sed -e 's/Sta/\\nSta/g' | tr '\\t' ' '";
-		$out = exec_fruitywifi($exec);
+		$out = exec_blackbulb($exec);
 		
 		$output = [];
 		

@@ -1,4 +1,4 @@
 module_ap
 ============
 
-FruityWifi AP module
+BlackBulb AP module

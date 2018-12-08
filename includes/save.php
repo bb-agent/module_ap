@@ -33,7 +33,7 @@ $ap_ht_capab = $_POST['ap_ht_capab'];
 if ($ap_ht_capab != "") {
 	
 	$exec = "$bin_sed -i 's/ap_ht_capab=.*/ap_ht_capab=\\\"".$ap_ht_capab."\\\";/g' ../_info_.php";
-	exec_fruitywifi($exec);
+	exec_blackbulb($exec);
 
     header("Location: ../index.php?tab=4");
     exit;

@@ -65,7 +65,7 @@ SSIDS = []
 
 (INTERFACE, TIME, LOG) = parseOptions(sys.argv[1:])
 
-LOG = "/usr/share/fruitywifi/conf/ssid.conf"
+LOG = "/usr/share/blackbulb/conf/ssid.conf"
 with open(LOG) as file:
     #SSIDS = file.readlines()
     for line in file:
