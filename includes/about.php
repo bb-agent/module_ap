@@ -14,7 +14,7 @@
 
 [AP]
 <br>
-<b>Nethunter</b>: This option needs to be enable when FruityWiFi is running on NetHunter.
+<b>Nethunter</b>: This option needs to be enable when BlackBlulb is running on NetHunter.
 <br><br>
 <b>hw_mode</b>: Operation mode (<b>a</b> = IEEE 802.11a (5 GHz), <b>b</b> = IEEE 802.11b (2.4 GHz), <b>g</b> = IEEE 802.11g (2.4 GHz)).
 <br>
@@ -44,7 +44,7 @@ For more details about the options: https://w1.fi/cgit/hostap/plain/hostapd/host
 <br>
 <b>Lease IP</b>: Range of IPs to be given by the DHCP server.
 <br>
-<b>DNS</b>: DNS server to be used by FruityWiFi (DNSmasq | FruityDNS)
+<b>DNS</b>: DNS server to be used by BlackBlulb (DNSmasq | FruityDNS)
 <br>
 <b>Spoof ALL</b>: This option can only be used by DNSmasq as DNS server. (For FruityDNS use <b>*</b> in FruityDNS setup.)
 <br>
